@@ -1,14 +1,14 @@
-import pandas as pd
+from copy import deepcopy
 
 
 class Dataset:
-    def __init__(self, path, attribute1, attribute2):
-        self.dataset = pd.read_csv(path)
-        self.attributes = self.dataset[[attribute1, attribute2]].values.tolist()
+    def __init__(self, df, attribute1, attribute2, protected_attr):
+        self.dataset = df
+        self.attributes = self.dataset[[attribute1, attribute2, protected_attr]].values.tolist()
         self.oracle = None
 
     def get_attributes(self) -> list:
-        return self.attributes
+        return deepcopy(self.attributes)
 
     def set_oracle(self, oracle):
         self.oracle = oracle

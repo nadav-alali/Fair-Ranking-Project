@@ -1,7 +1,6 @@
 import math
 from DataStructures.MinHeap import MinHeap
 from Datasets.Dataset import Dataset
-from Oracle import Oracle
 
 
 class Node:
@@ -42,10 +41,11 @@ def swap_attributes(attributes, node):
     node.ordering_exchange = calc_ordering_exchange(attributes[index], attributes[index+1])
 
 
-def twoDArraySweep(dataset: Dataset, oracle: Oracle):
+def twoDArraySweep(dataset: Dataset):
     attributes = dataset.get_attributes()
     heap = MinHeap()
     satisfactory_regions = []
+    oracle = dataset.get_oracle()
 
     for i in range(len(attributes) - 1):
         attribute1, attribute2 = attributes[i], attributes[i + 1]
