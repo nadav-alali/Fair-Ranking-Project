@@ -16,6 +16,6 @@ def twoDOnline(sorted_satisfactory_regions: list, w1, w2):
         return w1, w2
 
     if (theta - sorted_satisfactory_regions[low][0]) < (sorted_satisfactory_regions[high][0] - theta):
-        return r * math.cos(sorted_satisfactory_regions[low][0], r * math.sin(sorted_satisfactory_regions[low][0]))
+        return r * math.cos(sorted_satisfactory_regions[low][0]), r * math.sin(sorted_satisfactory_regions[low][0])
 
-    return  r * math.cos(sorted_satisfactory_regions[high][0], r * math.sin(sorted_satisfactory_regions[high][0]))
+    return r * math.cos(sorted_satisfactory_regions[high][0]), r * math.sin(sorted_satisfactory_regions[high][0])
