@@ -1,39 +1,60 @@
 class Oracle:
-    def __init__(self, protected_val='AfricanAmerican', top_k_fraction=0.3, max_protected_fraction=0.6):
+    def __init__(self, constraints, top_k_fraction=0.3):
         """
-        Initialize the fairness oracle using the FM1 fairness model.
+        Initialize a multi–attribute fairness oracle.
 
         Parameters:
-          protected_val (str): The value that identifies the protected group.
-          top_k_fraction (float): The fraction (e.g., 0.3 for top 30%) of the ranking to evaluate.
-          max_protected_fraction (float): The maximum allowed fraction of protected items in the top-k.
+          constraints (dict): A dictionary mapping attribute names to a dictionary
+                              of group constraints. For example:
+                              {
+                                  'race': {
+                                      'African-American': (0.3, 0.6),
+                                      'Caucasian': (0.4, 0.7)
+                                  },
+                                  'sex': {
+                                      'Female': (0.4, 0.6),
+                                      'Male': (0.4, 0.6)
+                                  }
+                              }
+                              Each tuple (min_frac, max_frac) represents the minimum and maximum
+                              allowed fraction for that group in the top–k.
+          top_k_fraction (float): The fraction (e.g., 0.3 for the top 30%) of the ranking to evaluate.
         """
-        self.protected_val = protected_val
+        self.constraints = constraints
+        self.types = list(constraints.keys())
         self.top_k_fraction = top_k_fraction
-        self.max_protected_fraction = max_protected_fraction
 
     def __call__(self, ranking):
         """
-        Evaluate if the given ranking satisfies the FM1 fairness criteria.
+        Evaluate if the given ranking satisfies the fairness criteria across multiple attributes.
 
         Parameters:
-          ranking (list): A list of items (e.g., dictionaries) representing the ranked order.
+          ranking (list): A list of items (dictionaries) representing the ranked order.
+                          Each item must contain keys for the protected attributes defined in constraints.
 
         Returns:
-          bool: True if the ranking is fair under FM1, False otherwise.
+          bool: True if the ranking satisfies all fairness constraints; False otherwise.
         """
         if not ranking:
             return True  # No items means no fairness violation.
 
-        # Determine the number of items to consider in the top-k.
+        # Determine the number of items in the top-k portion.
         top_k = int(len(ranking) * self.top_k_fraction)
         top_k = max(top_k, 1)  # Ensure at least one item is evaluated.
 
-        # Count how many items in the top-k belong to the protected group.
-        protected_count = sum(1 for item in ranking[:top_k] if item[2] == self.protected_val)
+        # For each protected attribute, count the occurrences of each group in the top-k.
+        index = 2
+        for attr in self.types:
+            counts = {}
+            for item in ranking[-top_k:]:
+                group = item[index]
+                counts[group] = counts.get(group, 0) + 1
 
-        # Calculate the fraction of protected items in the top-k.
-        fraction = protected_count / top_k
-
-        # The ranking is fair if the fraction does not exceed the threshold.
-        return fraction <= self.max_protected_fraction
+            for group, (min_frac, max_frac) in self.constraints[attr].items():
+                frac = counts.get(group, 0) / top_k
+                # Debug print (optional): print(f"For attribute '{attr}', group '{group}': fraction = {frac}")
+                if frac < min_frac or frac > max_frac:
+                    return False
+            index += 1
+        # If all attribute constraints are satisfied, return True.
+        return True
