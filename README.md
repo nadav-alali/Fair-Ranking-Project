@@ -65,6 +65,14 @@ Follow the on-screen UI instructions to:
 * For COMPAS: Choose the desired scoring attributes and protected type options.
 * Interact with the UI: The interface guides you through each step, including the online phase for fair ranking adjustments.
 
+- **Experiment Option:**  
+  There is an option to run an experiment that replicates the study presented in Figure 14 of the paper. When enabled, the experiment evaluates the performance of the 2DarraySweep preprocessing algorithm as the dataset size increases. It measures:
+  - The runtime performance (in seconds) of the algorithm.
+  - The number of ordering exchanges computed during preprocessing.
+
+  This experiment demonstrates that, despite the theoretical worst-case complexity, the actual performance is much more efficient. You can enable the experiment via the "Run experiment" checkbox in the COMPAS section of the UI.
+
+
 ## 6. Dependencies
 This project requires the following Python libraries:
 * pandas
