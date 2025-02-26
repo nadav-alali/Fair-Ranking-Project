@@ -2,7 +2,7 @@ import math
 import matplotlib.pyplot as plt
 from matplotlib.patches import Wedge
 
-FILE_NAME = '../outputs/plot_satisfactory_regions.png'
+FILE_NAME = 'outputs/plot_satisfactory_regions.png'
 
 def plot_satisfactory_regions(boundaries, max_radius=4):
     """

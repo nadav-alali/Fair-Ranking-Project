@@ -369,7 +369,7 @@ class Section4(ttk.Frame):
 
     def tkraise(self, aboveThis=None):
         is_experiment = self.controller.run_experiment_flag.get()
-        image_file = PLT_EXPERIMENT_NAME if is_experiment else "section4.png"
+        image_file = PLT_EXPERIMENT_NAME if is_experiment else "helpers/section4.png"
         pil_image = Image.open(image_file).convert("RGBA")
         if is_experiment:
             pil_image = pil_image.resize((600, 450))
