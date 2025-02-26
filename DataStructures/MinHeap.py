@@ -4,13 +4,12 @@ import heapq
 class MinHeap:
     def __init__(self):
         self.heap = []
-        self.seen_nodes = set()
+        self.intersections_count = 0
 
     def push(self, val):
         """Push a value onto the heap."""
-        if val not in self.seen_nodes:
-            heapq.heappush(self.heap, val)
-            # self.seen_nodes.add(val)
+        heapq.heappush(self.heap, val)
+        self.intersections_count += 1
 
     def pop(self):
         """Pop and return the smallest value from the heap."""

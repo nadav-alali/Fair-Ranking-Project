@@ -1,13 +1,10 @@
-from copy import deepcopy
 from random import sample
-
-import pandas as pd
 
 
 class Dataset:
-    def __init__(self, df, attribute1, attribute2, constraints_types):
+    def __init__(self, df, attribute1, attribute2, type):
         self.dataset = df
-        self.attributes = self.dataset[[attribute1, attribute2] + constraints_types].values.tolist()
+        self.attributes = self.dataset[[attribute1, attribute2, type]].values.tolist()
         self.oracle = None
         self.portion = self.dataset.shape[0]
 

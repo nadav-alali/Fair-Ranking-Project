@@ -6,7 +6,7 @@ from Datasets.Dataset import Dataset
 
 def toy_oracle(order):
     count = {'blue': 0, 'orange': 0}
-    for attr in order[-4:]:
+    for attr in order[:4]:
         count[attr[2]] += 1
     return count['blue'] == count['orange']
 
@@ -14,7 +14,7 @@ def toy_oracle(order):
 class Toy(Dataset):
     def __init__(self, attribute1='x', attribute2='y'):
         df = self.__load_and_preprocess(attribute1, attribute2)
-        super(Toy, self).__init__(df, attribute1, attribute2, ['color'])
+        super(Toy, self).__init__(df, attribute1, attribute2, 'color')
         self.set_oracle(toy_oracle)
 
     def __len__(self):
