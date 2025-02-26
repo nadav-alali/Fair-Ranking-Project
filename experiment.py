@@ -24,25 +24,25 @@ def plot_results(batch_sizes, times, intersections):
     plt.tight_layout()
     plt.savefig(PLT_EXPERIMENT_NAME, dpi=600, transparent=True)
 
+def run_batch(dataset, batch_size, times, intersections, batch_sizes):
+    dataset.set_portion(batch_size)
+    start = time.perf_counter()
+    _, inter = two_d_array_sweep(dataset)
+    end = time.perf_counter()
+    times.append(end - start)
+    intersections.append(inter)
+    batch_sizes.append(batch_size)
+
 
 
 def run_experiment(dataset, batch=200):
     times = []
     intersections = []
     batch_sizes = []
-    counter = 0
     for batch_size in range(batch, len(dataset), batch):
-        dataset.set_portion(batch_size)
-        start = time.perf_counter()
-        _, inter = two_d_array_sweep(dataset)
-        end = time.perf_counter()
-        times.append(end - start)
-        intersections.append(inter)
-        batch_sizes.append(batch_size)
-        if counter == 8:
-            break
-        counter += 1
+        run_batch(dataset, batch_size, times, intersections, batch_sizes)
+
+    if batch_size < len(dataset):
+        run_batch(dataset, batch_size, times, intersections, batch_sizes)
 
     plot_results(batch_sizes, times, intersections)
-    # if batch_size < len(dataset):
-    #     sorted_satisfactory_regions = two_d_array_sweep(dataset)
