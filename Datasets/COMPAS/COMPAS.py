@@ -1,6 +1,6 @@
 import pandas as pd
 from Datasets.Dataset import Dataset
-from Oracle import Oracle
+from Datasets.COMPAS.Oracle import Oracle
 import os
 
 

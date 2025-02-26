@@ -6,8 +6,8 @@ from Datasets.COMPAS.COMPAS import COMPAS
 from Datasets.Toy.Toy import Toy
 from algorithms.twoDimensionalArraySweep import two_d_array_sweep
 from algorithms.twoDimensionalOnline import two_d_online
-from experiment import run_experiment, PLT_EXPERIMENT_NAME
-from plot_satisfactory_regions import plot_satisfactory_regions
+from helpers.experiment import run_experiment, PLT_EXPERIMENT_NAME
+from helpers.plot_satisfactory_regions import plot_satisfactory_regions
 
 
 # Helper function to load an image, resize it to a square, add rounded corners,
