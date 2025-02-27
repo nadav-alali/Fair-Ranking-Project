@@ -8,6 +8,48 @@ from algorithms.twoDimensionalArraySweep import two_d_array_sweep
 from algorithms.twoDimensionalOnline import two_d_online
 from helpers.experiment import run_experiment, PLT_EXPERIMENT_NAME
 from helpers.plot_satisfactory_regions import plot_satisfactory_regions
+from PIL import ImageFilter
+
+
+class CreateToolTip(object):
+    """
+    Create a tooltip for a given widget.
+    The tooltip window is fixed to 300x200 pixels with a light green background.
+    The label text will wrap within the window to prevent it from being cut off.
+    """
+    def __init__(self, widget, text='widget info'):
+        self.widget = widget
+        self.text = text
+        self.tipwindow = None
+        self.widget.bind('<Enter>', self.show_tip)
+        self.widget.bind('<Leave>', self.hide_tip)
+
+    def show_tip(self, event=None):
+        # Do nothing if tooltip is already visible or there's no text.
+        if self.tipwindow or not self.text:
+            return
+        # Calculate position for tooltip relative to widget.
+        x, y, cx, cy = self.widget.bbox("insert")
+        x = x + self.widget.winfo_rootx() + 25
+        y = y + self.widget.winfo_rooty() + 20
+        # Create a top-level window for the tooltip.
+        self.tipwindow = tw = tk.Toplevel(self.widget)
+        tw.wm_overrideredirect(1)  # Remove window decorations.
+        # Set fixed geometry: 300x200 pixels.
+        tw.wm_geometry("300x100+%d+%d" % (x, y))
+        tw.configure(background="light green")
+        # Create a label inside the tooltip with a wraplength to fit text.
+        label = tk.Label(tw, text=self.text, justify=tk.LEFT,
+                         background="light green", relief=tk.SOLID, borderwidth=1,
+                         font=("Helvetica", 12), wraplength=280)
+        label.pack(fill="both", expand=True, padx=5, pady=5)
+
+    def hide_tip(self, event=None):
+        if self.tipwindow:
+            self.tipwindow.destroy()
+        self.tipwindow = None
+
+
 
 
 # Helper function to load an image, resize it to a square, add rounded corners,
@@ -15,7 +57,9 @@ from helpers.plot_satisfactory_regions import plot_satisfactory_regions
 def make_rounded_image(filename, size, radius):
     """
     Loads an image from filename, resizes it to `size` (tuple: (width, height)),
-    applies a rounded corner mask with the given radius, and composites it on a white background.
+    applies a high-resolution rounded corner mask with the given radius,
+    applies a slight Gaussian blur for smoother edges,
+    and composites the image on a white background.
     Returns an ImageTk.PhotoImage.
     """
     im = Image.open(filename).convert("RGBA")
@@ -24,11 +68,26 @@ def make_rounded_image(filename, size, radius):
     except AttributeError:
         resample_method = Image.ANTIALIAS
     im = im.resize(size, resample_method)
-    # Create a mask with rounded corners.
-    mask = Image.new("L", size, 0)
-    draw = ImageDraw.Draw(mask)
-    draw.rounded_rectangle((0, 0, size[0], size[1]), radius=radius, fill=255)
+
+    # Increase resolution for the mask.
+    scale_factor = 8  # Increase this factor for smoother edges.
+    large_size = (size[0] * scale_factor, size[1] * scale_factor)
+    large_radius = radius * scale_factor
+
+    # Create the high-resolution mask.
+    mask_large = Image.new("L", large_size, 0)
+    draw = ImageDraw.Draw(mask_large)
+    draw.rounded_rectangle((0, 0, large_size[0], large_size[1]), radius=large_radius, fill=255)
+
+    # Downsample the mask to target size.
+    mask = mask_large.resize(size, resample_method)
+
+    # Apply a slight Gaussian blur for smoother transitions.
+    mask = mask.filter(ImageFilter.GaussianBlur(1))
+
+    # Apply the mask as an alpha channel.
     im.putalpha(mask)
+
     # Composite onto a white background.
     bg = Image.new("RGBA", size, (255, 255, 255, 255))
     bg.paste(im, mask=im.split()[3])
@@ -174,7 +233,6 @@ class Section2(ttk.Frame):
         super().__init__(parent, style="White.TFrame")
         self.controller = controller
 
-        # Top frame with centered title.
         top_frame = ttk.Frame(self, style="White.TFrame")
         top_frame.pack(side="top", fill="x", pady=50, padx=5)
         label_title = ttk.Label(top_frame,
@@ -183,13 +241,11 @@ class Section2(ttk.Frame):
                                 background="white")
         label_title.pack(anchor="center")
 
-        # Main frame for option descriptions, centered.
         main_frame = ttk.Frame(self, style="White.TFrame")
         main_frame.pack(side="top", fill="x", padx=120, pady=10)
         main_frame.columnconfigure(0, weight=1)
         main_frame.columnconfigure(1, weight=1)
 
-        # Option: Attribute 1.
         ttk.Label(main_frame, text="Attribute 1:", font=("Helvetica", 14), background="white") \
             .grid(row=0, column=0, padx=5, pady=15, sticky="w")
         self.attr1_combo = ttk.Combobox(main_frame, textvariable=controller.compas_attr1,
@@ -197,7 +253,6 @@ class Section2(ttk.Frame):
                                         font=("Helvetica", 14))
         self.attr1_combo.grid(row=0, column=1, padx=5, pady=15, sticky="w")
 
-        # Option: Attribute 2.
         ttk.Label(main_frame, text="Attribute 2:", font=("Helvetica", 14), background="white") \
             .grid(row=1, column=0, padx=5, pady=15, sticky="w")
         self.attr2_combo = ttk.Combobox(main_frame, textvariable=controller.compas_attr2,
@@ -205,7 +260,6 @@ class Section2(ttk.Frame):
                                         font=("Helvetica", 14))
         self.attr2_combo.grid(row=1, column=1, padx=5, pady=15, sticky="w")
 
-        # Option: Protected Type.
         ttk.Label(main_frame, text="Protected Type:", font=("Helvetica", 14), background="white") \
             .grid(row=2, column=0, padx=5, pady=15, sticky="w")
         self.type_combo = ttk.Combobox(main_frame, textvariable=controller.compas_type,
@@ -213,7 +267,6 @@ class Section2(ttk.Frame):
                                        font=("Helvetica", 14))
         self.type_combo.grid(row=2, column=1, padx=5, pady=15, sticky="w")
 
-        # Option: Protected Type Att.
         ttk.Label(main_frame, text="Protected Type Att:", font=("Helvetica", 14), background="white") \
             .grid(row=3, column=0, padx=5, pady=15, sticky="w")
         self.type_att_combo = ttk.Combobox(main_frame, textvariable=controller.compas_type_att,
@@ -221,31 +274,33 @@ class Section2(ttk.Frame):
                                            font=("Helvetica", 14))
         self.type_att_combo.grid(row=3, column=1, padx=5, pady=15, sticky="w")
 
-        # Lower frame for "Run experiment" and FM1 explanation.
         lower_frame = ttk.Frame(self, style="White.TFrame")
         lower_frame.pack(pady=20)
         self.run_exp_cb = ttk.Checkbutton(lower_frame, text="Run experiment",
                                           variable=controller.run_experiment_flag,
                                           style="Big.TCheckbutton")
         self.run_exp_cb.pack(pady=5)
+        # Create a tooltip for the experiment checkbox.
+        tooltip_text = ("This experiment replicates the study presented in Figure 14 of the paper. "
+                        "It evaluates the performance of the 2DarraySweep preprocessing algorithm as the dataset size increases "
+                        "by measuring runtime (in seconds) and the number of ordering exchanges computed during preprocessing.")
+        CreateToolTip(self.run_exp_cb, tooltip_text)
 
         fm1_explain = ttk.Label(lower_frame,
                                 text=("FM1: This fairness model ensures that the top-K (30%) ranking contains "
-                                      "a minimum proportion of items from the protected group (no more than 60%). "
-                                      "Adjust the attribute selections above to influence the ranking "
-                                      "while satisfying the fairness constraint."),
+                                      "a balanced proportion of the protected group (no more than 60% from one group). "
+                                      "Adjust the attribute selections above to influence the ranking while satisfying "
+                                      "the fairness constraint."),
                                 foreground="green", font=("Helvetica", 14, "bold"),
                                 background="white", wraplength=500, justify="center")
         fm1_explain.pack(pady=30)
 
-        # Bottom frame for the Next button.
         bottom_frame = ttk.Frame(self, style="White.TFrame")
         bottom_frame.pack(side="bottom", fill="x", pady=10)
         self.next_btn = ttk.Button(bottom_frame, text="Next", command=self.go_next, state="disabled",
                                      style=controller.button_style)
         self.next_btn.pack(side="right", padx=20)
 
-        # Trace variable changes to enable the Next button.
         controller.compas_attr1.trace("w", self.check_fields)
         controller.compas_attr2.trace("w", self.check_fields)
         controller.compas_type.trace("w", self.check_fields)
@@ -276,6 +331,7 @@ class Section2(ttk.Frame):
         else:
             self.controller.sorted_satisfactory_regions, _ = two_d_array_sweep(compas_dataset)
             self.controller.show_frame("Section3")
+
 
 
 
