@@ -26,3 +26,6 @@ class Oracle:
                     return False
 
         return True
+
+    def reset(self):
+        self.top_k = None

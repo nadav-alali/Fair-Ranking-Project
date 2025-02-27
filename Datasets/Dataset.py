@@ -13,6 +13,7 @@ class Dataset:
 
     def set_portion(self, portion):
         self.portion = portion
+        self.oracle.reset()
 
     def get_attributes(self) -> list:
         return sample(self.attributes, self.portion)
