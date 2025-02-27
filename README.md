@@ -54,6 +54,8 @@ The fairness model implemented, referred to as FM1, ensures that the top-K ranki
 
 ## 5. How to Run
 
+![Alt text](helpers/app_opening_screen.png)
+
 To run the implementation, simply execute the `main.py` file from the project root:
 
 ```bash
@@ -72,6 +74,7 @@ Follow the on-screen UI instructions to:
 
   This experiment demonstrates that, despite the theoretical worst-case complexity, the actual performance is much more efficient. You can enable the experiment via the "Run experiment" checkbox in the COMPAS section of the UI.
 
+![Alt text](outputs/time_inter_plot copy.png)
 
 ## 6. Dependencies
 This project requires the following Python libraries:
