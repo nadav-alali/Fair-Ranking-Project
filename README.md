@@ -77,7 +77,7 @@ Follow the on-screen UI instructions to:
   This experiment demonstrates that, despite the theoretical worst-case complexity, the actual performance is much more efficient. You can enable the experiment via the "Run experiment" checkbox in the COMPAS section of the UI.
 
 <div align="center">
-  <img src="outputs/time_inter_plot_copy.png" alt="App Opening Screen" width="300">
+  <img src="outputs/time_inter_plot_copy.png" alt="App Opening Screen" width="500">
 </div>
 
 ## 6. Dependencies
