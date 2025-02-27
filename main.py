@@ -217,7 +217,7 @@ class Section2(ttk.Frame):
         ttk.Label(main_frame, text="Protected Type Att:", font=("Helvetica", 14), background="white") \
             .grid(row=3, column=0, padx=5, pady=10, sticky="e")
         self.type_att_combo = ttk.Combobox(main_frame, textvariable=controller.compas_type_att,
-                                           values=[], state="readonly", width=15,
+                                           values=[], state="disabled", width=15,
                                            font=("Helvetica", 14))
         self.type_att_combo.grid(row=3, column=1, padx=5, pady=10, sticky="w")
 
@@ -255,6 +255,7 @@ class Section2(ttk.Frame):
         if self.controller.compas_type.get():
             type_att = COMPAS.TYPE_ATTS.get(self.controller.compas_type.get(), [])
             self.type_att_combo["values"] = type_att
+            self.type_att_combo["state"] = "readonly"
         if (self.controller.compas_attr1.get() and
             self.controller.compas_attr2.get() and
             self.controller.compas_type.get() and
