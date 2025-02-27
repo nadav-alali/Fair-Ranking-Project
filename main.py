@@ -116,7 +116,7 @@ class Section1(ttk.Frame):
 
         # Title label at the top.
         title = ttk.Label(self, text="Choose Dataset", font=("Helvetica", 18, "bold"), background="white")
-        title.pack(pady=10)
+        title.pack(pady=40)
 
         # --- Toy Option ---
         toy_frame = ttk.Frame(self, style="White.TFrame")
