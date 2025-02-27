@@ -74,7 +74,7 @@ Follow the on-screen UI instructions to:
 
   This experiment demonstrates that, despite the theoretical worst-case complexity, the actual performance is much more efficient. You can enable the experiment via the "Run experiment" checkbox in the COMPAS section of the UI.
 
-![Alt text](outputs/time_inter_plot_copy.png)
+<img src="helpers/app_opening_screen.png" alt="App Opening Screen" width="300">
 
 ## 6. Dependencies
 This project requires the following Python libraries:
