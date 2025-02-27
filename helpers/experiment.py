@@ -10,14 +10,14 @@ def plot_results(batch_sizes, times, intersections):
     color1 = 'tab:blue'
     ax1.set_xlabel('n')  # number of items
     ax1.set_ylabel('time (sec)', color=color1)
-    ax1.plot(batch_sizes, times, marker='o', color=color1)
+    ax1.plot(batch_sizes, times, marker='<', color=color1)
     ax1.tick_params(axis='y', labelcolor=color1)
 
     # Create a second y-axis sharing the same x-axis
     ax2 = ax1.twinx()
     color2 = 'tab:red'
     ax2.set_ylabel('# of intersections', color=color2)
-    ax2.plot(batch_sizes, intersections, linestyle='--', marker='<', color=color2)
+    ax2.plot(batch_sizes, intersections, linestyle='--', color=color2)
     ax2.tick_params(axis='y', labelcolor=color2)
 
     plt.title('Figure 14: 2D; preprocessing time, varying n')
@@ -43,6 +43,6 @@ def run_experiment(dataset, batch=200):
         run_batch(dataset, batch_size, times, intersections, batch_sizes)
 
     if batch_size < len(dataset):
-        run_batch(dataset, batch_size, times, intersections, batch_sizes)
+        run_batch(dataset, len(dataset), times, intersections, batch_sizes)
 
     plot_results(batch_sizes, times, intersections)

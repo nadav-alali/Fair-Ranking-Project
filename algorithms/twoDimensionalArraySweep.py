@@ -45,6 +45,9 @@ def update_event(i, ordering, heap):
     y_right = ordering[i + 1][1]
     if y_left < y_right:
         oe = calc_ordering_exchange(ordering[i], ordering[i + 1])
+        # avoid adding nodes that their angle exceeds the required range
+        if oe > math.pi / 2:
+            return
         heap.push(Node(oe, ordering[i], ordering[i + 1], i))
 
 
@@ -53,6 +56,18 @@ def swap_in_ordering(ordering, i):
     Swap two adjacent items in the ordering.
     """
     ordering[i], ordering[i + 1] = ordering[i + 1], ordering[i]
+
+def get_theta_and_update_the_event(heap, ordering):
+    node = heap.pop()
+    theta = node.ordering_exchange
+    # Check if the event is still valid.
+    if ordering[node.index] != node.attribute1 or ordering[node.index + 1] != node.attribute2:
+        return None  # stale event; skip it.
+    swap_in_ordering(ordering, node.index)
+    # Update events for the affected adjacent pairs.
+    update_event(node.index - 1, ordering, heap)
+    update_event(node.index + 1, ordering, heap)
+    return theta
 
 
 def two_d_array_sweep(dataset: Dataset):
@@ -89,15 +104,7 @@ def two_d_array_sweep(dataset: Dataset):
         if oracle(ordering):
             satisfactory_regions.append((theta, 0))
             break
-        node = heap.pop()
-        theta = node.ordering_exchange
-        # Check if the event is still valid.
-        if ordering[node.index] != node.attribute1 or ordering[node.index + 1] != node.attribute2:
-            continue  # stale event; skip it.
-        swap_in_ordering(ordering, node.index)
-        # Update events for the affected adjacent pairs.
-        update_event(node.index - 1, ordering, heap)
-        update_event(node.index + 1, ordering, heap)
+        theta = get_theta_and_update_the_event(heap, ordering)
 
     if heap.size() == 0 and not oracle(ordering):
         return satisfactory_regions, heap.intersections_count
@@ -105,20 +112,14 @@ def two_d_array_sweep(dataset: Dataset):
     flag = oracle(ordering)
     # Second sweep loop: record transitions in fairness.
     while heap.size() > 0:
-        node = heap.pop()
-        theta = node.ordering_exchange
-        if ordering[node.index] != node.attribute1 or ordering[node.index + 1] != node.attribute2:
-            continue  # ignore stale event.
-        swap_in_ordering(ordering, node.index)
-        update_event(node.index - 1, ordering, heap)
-        update_event(node.index + 1, ordering, heap)
-
-        new_sign = oracle(ordering)
-        if flag and not new_sign:
-            satisfactory_regions.append((theta, 1))  # end boundary of a satisfactory region.
-        elif (not flag) and new_sign:
-            satisfactory_regions.append((theta, 0))  # start boundary of a satisfactory region.
-        flag = new_sign
+        theta = get_theta_and_update_the_event(heap, ordering)
+        if theta is not None:
+            new_sign = oracle(ordering)
+            if flag and not new_sign:
+                satisfactory_regions.append((theta, 1))  # end boundary of a satisfactory region.
+            elif (not flag) and new_sign:
+                satisfactory_regions.append((theta, 0))  # start boundary of a satisfactory region.
+            flag = new_sign
 
     if flag:
         satisfactory_regions.append((math.pi / 2, 1))
