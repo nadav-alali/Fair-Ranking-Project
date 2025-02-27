@@ -176,7 +176,7 @@ class Section2(ttk.Frame):
 
         # Top frame with centered title.
         top_frame = ttk.Frame(self, style="White.TFrame")
-        top_frame.pack(side="top", fill="x", pady=10, padx=5)
+        top_frame.pack(side="top", fill="x", pady=50, padx=5)
         label_title = ttk.Label(top_frame,
                                 text="Choose Attributes (COMPAS)",
                                 font=("Helvetica", 18, "bold"),
@@ -185,45 +185,45 @@ class Section2(ttk.Frame):
 
         # Main frame for option descriptions, centered.
         main_frame = ttk.Frame(self, style="White.TFrame")
-        main_frame.pack(side="top", fill="x", padx=10, pady=10)
+        main_frame.pack(side="top", fill="x", padx=120, pady=10)
         main_frame.columnconfigure(0, weight=1)
         main_frame.columnconfigure(1, weight=1)
 
         # Option: Attribute 1.
         ttk.Label(main_frame, text="Attribute 1:", font=("Helvetica", 14), background="white") \
-            .grid(row=0, column=0, padx=5, pady=10, sticky="e")
+            .grid(row=0, column=0, padx=5, pady=15, sticky="w")
         self.attr1_combo = ttk.Combobox(main_frame, textvariable=controller.compas_attr1,
                                         values=COMPAS.SCORING_ATTR, state="readonly", width=15,
                                         font=("Helvetica", 14))
-        self.attr1_combo.grid(row=0, column=1, padx=5, pady=10, sticky="w")
+        self.attr1_combo.grid(row=0, column=1, padx=5, pady=15, sticky="w")
 
         # Option: Attribute 2.
         ttk.Label(main_frame, text="Attribute 2:", font=("Helvetica", 14), background="white") \
-            .grid(row=1, column=0, padx=5, pady=10, sticky="e")
+            .grid(row=1, column=0, padx=5, pady=15, sticky="w")
         self.attr2_combo = ttk.Combobox(main_frame, textvariable=controller.compas_attr2,
                                         values=COMPAS.SCORING_ATTR, state="readonly", width=15,
                                         font=("Helvetica", 14))
-        self.attr2_combo.grid(row=1, column=1, padx=5, pady=10, sticky="w")
+        self.attr2_combo.grid(row=1, column=1, padx=5, pady=15, sticky="w")
 
         # Option: Protected Type.
         ttk.Label(main_frame, text="Protected Type:", font=("Helvetica", 14), background="white") \
-            .grid(row=2, column=0, padx=5, pady=10, sticky="e")
+            .grid(row=2, column=0, padx=5, pady=15, sticky="w")
         self.type_combo = ttk.Combobox(main_frame, textvariable=controller.compas_type,
                                        values=list(COMPAS.TYPE_ATTS.keys()), state="readonly", width=15,
                                        font=("Helvetica", 14))
-        self.type_combo.grid(row=2, column=1, padx=5, pady=10, sticky="w")
+        self.type_combo.grid(row=2, column=1, padx=5, pady=15, sticky="w")
 
         # Option: Protected Type Att.
         ttk.Label(main_frame, text="Protected Type Att:", font=("Helvetica", 14), background="white") \
-            .grid(row=3, column=0, padx=5, pady=10, sticky="e")
+            .grid(row=3, column=0, padx=5, pady=15, sticky="w")
         self.type_att_combo = ttk.Combobox(main_frame, textvariable=controller.compas_type_att,
                                            values=[], state="disabled", width=15,
                                            font=("Helvetica", 14))
-        self.type_att_combo.grid(row=3, column=1, padx=5, pady=10, sticky="w")
+        self.type_att_combo.grid(row=3, column=1, padx=5, pady=15, sticky="w")
 
         # Lower frame for "Run experiment" and FM1 explanation.
         lower_frame = ttk.Frame(self, style="White.TFrame")
-        lower_frame.pack(pady=10)
+        lower_frame.pack(pady=20)
         self.run_exp_cb = ttk.Checkbutton(lower_frame, text="Run experiment",
                                           variable=controller.run_experiment_flag,
                                           style="Big.TCheckbutton")
@@ -234,9 +234,9 @@ class Section2(ttk.Frame):
                                       "a minimum proportion of items from the protected group (no more than 60%). "
                                       "Adjust the attribute selections above to influence the ranking "
                                       "while satisfying the fairness constraint."),
-                                foreground="blue", font=("Helvetica", 14, "bold"),
+                                foreground="green", font=("Helvetica", 14, "bold"),
                                 background="white", wraplength=500, justify="center")
-        fm1_explain.pack(pady=10)
+        fm1_explain.pack(pady=30)
 
         # Bottom frame for the Next button.
         bottom_frame = ttk.Frame(self, style="White.TFrame")
